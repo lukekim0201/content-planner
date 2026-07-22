@@ -1,16 +1,16 @@
-from typing import Union
 from fastapi import FastAPI
+from app.controller import items, users
+
 app = FastAPI()
+
+app.include_router(items.router)
+app.include_router(users.router)
 
 from fastapi.responses import FileResponse
 
 @app.get("/")
 def index():
     return FileResponse('app/index.html')
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
 
 @app.get("/health")
 def health_check():
