@@ -1,27 +1,15 @@
-from fastapi import FastAPI
-from app.controller import items, users
+from fastapi import FastAPI, Depends
+from app.routers import projects, scripts, assets
 
 app = FastAPI()
-
-app.include_router(items.router)
-app.include_router(users.router)
-
-from fastapi.responses import FileResponse
-
+app.include_router(projects.router)
+app.include_router(scripts.router)
+app.include_router(assets.router)
+        
 @app.get("/")
-def index():
-    return FileResponse('app/index.html')
+def read_root():
+    return {"message": "API is alive"}
 
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
-
-from pydantic import BaseModel
-class Model(BaseModel):
-    name: str
-    phone: int
-
-@app.post("/send")
-def 작명(data : Model):
-    print(data)
-    return {"message": "전송완료"}
