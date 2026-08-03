@@ -38,9 +38,8 @@ def get_current_user(
         user_id = payload.get("sub")
         if user_id is None:
             raise credentials_error
-    except JWTError:
+    except JWTError as e:
         raise credentials_error
-
     user = session.get(User, uuid.UUID(user_id))
     if user is None:
         raise credentials_error
