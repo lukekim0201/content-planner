@@ -3,6 +3,23 @@ from typing import Optional
 import uuid
 from app.models import ProjectStatus, AssetType
 
+# User
+class UserCreate(SQLModel):
+    email: str
+    password: str
+
+class UserLogin(SQLModel):
+    email: str
+    password: str
+
+class UserRead(SQLModel):
+    id: uuid.UUID
+    email: str
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+
 #Project
 class ProjectCreate(SQLModel):
     title: str
