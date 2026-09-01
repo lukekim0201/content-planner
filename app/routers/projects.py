@@ -83,5 +83,12 @@ def delete_project(
     project = session.get(Project, project_id)
     if not project or project.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Project not found")
+    
+    for asset in project.assets:
+        session.delete(asset)
+    
+    if project.script:
+        session.delete(project.script)
+    
     session.delete(project)
     session.commit()
