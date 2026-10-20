@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../api/client";
-import { useAuth } from "../context/AuthContext";
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { apiFetch } from '../api/client'
+import { useAuth } from '../context/AuthContext'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -34,9 +34,11 @@ export default function LoginPage() {
       <h1 className="text-xl font-semibold">Log in</h1>
       <input
         className="border rounded px-3 py-2"
+        type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="email"
+        required
       />
       <input
         className="border rounded px-3 py-2"
@@ -44,6 +46,7 @@ export default function LoginPage() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="password"
+        required
       />
       {error && <p className="text-red-600 text-sm">{error}</p>}
       <button
@@ -53,6 +56,12 @@ export default function LoginPage() {
       >
         {loading ? 'Logging in...' : 'Log in'}
       </button>
+      <p className="text-sm text-gray-500 text-center">
+        No account?{' '}
+        <Link to="/signup" className="text-blue-600">
+          Sign up
+        </Link>
+      </p>
     </form>
   )
 }

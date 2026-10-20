@@ -1,6 +1,7 @@
-venv/
+# Repo-wide ignores. backend/ and frontend/ each have their own .gitignore
+# for language-specific files (venv, node_modules, .env, build output, ...).
 .env
-__pycache__/
-*.pyc
-pytest.ini
-tests/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

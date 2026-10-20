@@ -1,22 +1,35 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { apiFetch } from '../api/client'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem('token'))
+  const [user, setUser] = useState(null)
 
-  function login(newToken) {
+  const login = useCallback((newToken) => {
     localStorage.setItem('token', newToken)
     setToken(newToken)
-  }
+  }, [])
 
-  function logout() {
+  const logout = useCallback(() => {
     localStorage.removeItem('token')
     setToken(null)
-  }
+    setUser(null)
+  }, [])
+
+  useEffect(() => {
+    if (!token) {
+      setUser(null)
+      return
+    }
+    apiFetch('/auth/me')
+      .then(setUser)
+      .catch(() => logout()) // token expired/invalid
+  }, [token, logout])
 
   return (
-    <AuthContext.Provider value={{ token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated: !!token, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
