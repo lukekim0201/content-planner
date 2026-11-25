@@ -3,6 +3,7 @@ import { apiFetch } from '../api/client'
 import { useApi } from '../hooks/useApi'
 import AssetUploader from '../components/AssetUploader'
 import AssetGallery from '../components/AssetGallery'
+import ScriptEditor from '../components/ScriptEditor'
 import { COLUMNS } from '../components/KanbanBoard'
 
 export default function ProjectDetailPage() {
@@ -104,10 +105,7 @@ export default function ProjectDetailPage() {
           </Link>
         </div>
         {project.script ? (
-          <div
-            className="script-prose border rounded-lg p-4 bg-white"
-            dangerouslySetInnerHTML={{ __html: project.script.content }}
-          />
+          <ScriptEditor content={project.script.content} editable={false} />
         ) : (
           <p className="text-gray-500">No script yet.</p>
         )}

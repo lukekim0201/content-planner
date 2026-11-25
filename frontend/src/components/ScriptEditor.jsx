@@ -11,20 +11,39 @@ const TOOLBAR_BUTTONS = [
   { label: '1.', title: 'Numbered list', node: 'orderedList', command: (chain) => chain.toggleOrderedList() },
 ]
 
-export default function ScriptEditor({ content, onChange, placeholder = 'Start writing your script…' }) {
+// With editable={false} this doubles as a safe read-only viewer: Tiptap
+// parses the HTML through its schema, so <script> tags and event-handler
+// attributes in stored content are dropped instead of rendered.
+export default function ScriptEditor({
+  content,
+  onChange,
+  editable = true,
+  placeholder = 'Start writing your script…',
+}) {
   const editor = useEditor({
     extensions: [StarterKit],
     content: content || '',
+    editable,
     // Tiptap v3 doesn't re-render on selection changes by default; without
     // this the toolbar's active-button highlight never updates.
     shouldRerenderOnTransaction: true,
     editorProps: {
-      attributes: { class: 'script-prose', 'data-placeholder': placeholder },
+      attributes: editable
+        ? { class: 'script-prose', 'data-placeholder': placeholder }
+        : { class: 'script-prose', style: 'min-height: 0' },
     },
-    onUpdate: ({ editor }) => onChange(editor.getHTML()),
+    onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
   })
 
   if (!editor) return null
+
+  if (!editable) {
+    return (
+      <div className="border rounded-lg p-4 bg-white">
+        <EditorContent editor={editor} />
+      </div>
+    )
+  }
 
   return (
     <div className="border border-gray-300 rounded-lg overflow-hidden">

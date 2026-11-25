@@ -74,6 +74,23 @@ def test_delete_uploaded_asset_removes_file(client, tmp_path):
     assert not stored[0].exists()
 
 
+def test_delete_project_removes_uploaded_files(client, tmp_path):
+    headers = auth_headers(client, "projectcleanup@example.com")
+    project = client.post("/projects", json={"title": "P"}, headers=headers).json()
+    for name in ("a.jpg", "b.jpg"):
+        client.post(
+            f"/projects/{project['id']}/assets/upload",
+            headers=headers,
+            files={"file": (name, io.BytesIO(b"bytes"), "image/jpeg")},
+        )
+    stored = list((tmp_path / project["id"]).iterdir())
+    assert len(stored) == 2
+
+    response = client.delete(f"/projects/{project['id']}", headers=headers)
+    assert response.status_code == 204
+    assert not any(path.exists() for path in stored)
+
+
 def test_delete_registered_asset_cannot_escape_project_folder(client, tmp_path):
     """A client-registered file_url must never let a delete reach files
     outside that project's own upload folder."""

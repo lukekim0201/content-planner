@@ -146,7 +146,9 @@ points it at the backend (defaults to `http://localhost:8000`).
   generates a `SECRET_KEY` for you.
 - **Backend → Railway**: set the service's root directory to `backend`;
   `railway.json` configures the start command (migrate then serve). Add a
-  Postgres plugin and set the same env vars as in `.env.example`.
+  Postgres plugin and set the same env vars as in `.env.example`. You must
+  set `SECRET_KEY`: the backend won't start against Postgres without one, so
+  it can't fall back to the public dev key by accident.
 - **Frontend → Vercel**: import this repo with `frontend` as the project
   root, set `VITE_API_BASE_URL` to your deployed backend URL.
   `vercel.json` handles the SPA rewrite so client-side routes don't 404 on

@@ -9,6 +9,7 @@ from app.database import get_session
 from app.models import Project, User
 from app.schemas import ProjectCreate, ProjectUpdate, ProjectRead, ProjectFullRead
 from app.auth import get_current_user
+from app import storage
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -101,11 +102,15 @@ def update_project(
 
 
 @router.delete("/{project_id}", status_code=204)
-def delete_project(
+async def delete_project(
     project_id: uuid.UUID,
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_user),
 ):
     project = _get_owned_project(session, project_id, current_user)
+    # The DB cascade removes the asset rows but not the stored files, which
+    # would otherwise stay publicly reachable at their URLs.
+    for asset in project.assets:
+        await storage.delete_stored_file(asset.file_url, project.id)
     session.delete(project)  # cascades to script + assets (see models.py)
     session.commit()

@@ -15,7 +15,15 @@ if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql://" + DATABASE_URL[len("postgres://"):]
 
 # --- Auth -----------------------------------------------------------------
-SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-secret-change-me")
+_DEV_SECRET_KEY = "dev-only-secret-change-me"
+SECRET_KEY = os.getenv("SECRET_KEY") or _DEV_SECRET_KEY
+# The dev fallback is public (it's in this file), so anyone could forge
+# tokens with it. Allow it only for local SQLite; refuse to start otherwise.
+if SECRET_KEY == _DEV_SECRET_KEY and not DATABASE_URL.startswith("sqlite"):
+    raise RuntimeError(
+        "SECRET_KEY must be set when not using local SQLite. Generate one with: "
+        'python -c "import secrets; print(secrets.token_hex(32))"'
+    )
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
 
